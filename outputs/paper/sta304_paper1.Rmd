@@ -3,12 +3,12 @@ title: "Different Types of Application for Polls and Participation in Toronto"
 author: "Qingya Li"
 date: "6/02/2022"
 output: pdf_document
-abstract: " The dataset reports the public polls conducted by the City between 2015-2021. Studying the dataset can help researchers know how the residents/tenants/owners feel and react to the issues. In this paper, we summarize the number of potential voters and the ballots returned in the polls. We also create plots to find the relationship between application types and the response rate met/final polls results. We conclude that the number of ballots returned is less than the number of potential voters, meaning fewer people cast a vote than expected. We should consider encouraging their participation and conducting the polls more significantly and efficiently. Meanwhile, more polls met the response rate than not meet and more favorable results than opposed among the applications. Besides, the plots show the number of applications for front yard parking is higher than others, the government may need to consider how to better the situations."
+abstract: " Studying the dataset can help researchers know how the residents/tenants/owners feel and react to the issues. We summarize the number of potential voters and the ballots returned in the polls. We also create plots to find the relationship between application types and the response rate met/final polls results. We conclude that the number of ballots returned is less than the number of potential voters, meaning fewer people cast a vote than expected, we should consider encouraging their participation and conducting the polls more significantly and efficiently. Besides, the plots show the number of applications for front yard parking is higher than others, the government may need to consider how to better the situations."
 bibliography: ref.bib
 
 ---
 
-More information are available ^[https://github.com/QingyaLi/sta304-paper1]
+(More information are available) ^[https://github.com/QingyaLi/sta304-paper1]
 
 # 1 Introduction
 
@@ -109,16 +109,14 @@ df %>%
   theme_minimal()+ 
   labs(x = 'Application Type', y = 'Number of Application', fill = 'Response Rate Met', title = ' The Relationship Between Application Type and Response Rate Met') +
   scale_fill_brewer(palette="Set3")
-knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Overall, we can see response rate met in all the applications is higher than the rate did not meet. Specifically, the response rate met for the front yard parking application is the highest (375 polls met and only 8 polls did not meet the response rate), the response rate met for the commercial boulevard parking is the lowest (9 met and 6 did not meet). Once meet the response rate, the poll is considered valid.
+Overall, we can see response rate met in all the applications is higher than the rate did not meet. Specifically, the response rate met for the appeal- front yard parking and front yard parking application are the highest (194 and 375 polls met the rate, respectively), 97% of these two applications met the response rate. The commercial boulevard parking is the lowest (only 9 of them met the rate). The graph shows the voters respond more actively in (appeal-)front yard parking applications than others. They care less about boulevard cafes and commercial boulevard parking. Once meet the response rate, the poll is considered valid.
 
 \newpage
 Figure 2 shows the relationship between the final results of the polls (in favor, opposed, response rate not met) and application types.
 
 ```{r, a4, fig.cap = 'Comparing application types by the final results', fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE, echo = FALSE}
-#add the label of count
 df %>%
   count(APPLICATION_FOR, POLL_RESULT)%>%
   ggplot(aes(x=APPLICATION_FOR, y=n, fill = POLL_RESULT)) + 
@@ -130,7 +128,7 @@ df %>%
 
 ```
 
-Note that generally, we have more in favour results than opposed results among the applications, except the commercial boulevard parking (3 in favour, and 6 against). Front yard parking polls have the most in favour results. And appeal - front yard parking pools have the most opposed results.
+Note that generally, we have more in favour results than opposed results among the applications, except the commercial boulevard parking (3 in favour, and 6 against). Front yard parking polls have the most in favour results (361 are favorable). And appeal - front yard parking polls have the most opposed results (29 against).
 
 \newpage
 
@@ -141,8 +139,7 @@ df %>%
   ggplot(mapping = aes(x= YEAR, y = BALLOTS_CAST, color = POLL_RESULT)) + geom_point() + theme_minimal()+ labs(x = "Year", y = "Number of ballots returned", color = "Poll Result", title  = "The Relationship between Year and the Number of ballots returned, by Poll Result") +  scale_color_brewer(palette = "Set2")
 ```
 
-We can see an outlier in 2019, which the number of ballots returned is high but it seems did not meet the response rate. This case may be discussed in further study. Most of the polls are approved instead of against. We can also see that on average, the number of ballots returned is below 100 among these years.
-
+Most of the polls are approved instead of against. We can see an outlier in 2019, in which the number of ballots returned is high but it seems did not meet the response rate. This case may be discussed in further study. We can also see that on average, the number of ballots returned is below 100 among these years.
 
 \newpage
 # 3 Reference
