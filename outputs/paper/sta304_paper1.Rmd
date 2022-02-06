@@ -1,0 +1,148 @@
+---
+title: "Different Types of Application for Polls and Participation in Toronto"
+author: "Qingya Li"
+date: "6/02/2022"
+output: pdf_document
+abstract: " The dataset reports the public polls conducted by the City between 2015-2021. Studying the dataset can help researchers know how the residents/tenants/owners feel and react to the issues. In this paper, we summarize the number of potential voters and the ballots returned in the polls. We also create plots to find the relationship between application types and the response rate met/final polls results. We conclude that the number of ballots returned is less than the number of potential voters, meaning fewer people cast a vote than expected. We should consider encouraging their participation and conducting the polls more significantly and efficiently. Meanwhile, more polls met the response rate than not meet and more favorable results than opposed among the applications. Besides, the plots show the number of applications for front yard parking is higher than others, the government may need to consider how to better the situations."
+bibliography: ref.bib
+
+---
+
+# 1 Introduction
+
+Voting is necessary for daily life. The voting results can significantly reflect what people like and dislike, both personal and social [@motivation]. As citizens, we have the political right and responsibility to vote [@motivation]. The City Clerk’s Office responded for the voting in Toronto, including the polls for appeal-front yard parking, front yard parking, boulevard cafe, and boulevard parking [@cityclerk]. Therefore, if people need to require the front yard parking, boulevard parking, and any other type of permissions, they shall submit their applications. The City Clerk's Office would mail the ballots to the residents, tenants, and owners in the polling area [@information]. The results will depend on the number of ballots returned and the number of submitted ballots marked as in favour [@information].
+
+We need to know the voting results in the city. Because the results can help people know what kind of issue may exist in their community and also help the government know what type of questions people most care about and how people react to these issues. More importantly, to help the government consider implementing some relevant policies to reduce the issues that happen in the future. Besides, by observing the number of ballots and other variables. Government shall consider how to improve the participation of the poll and make the vote more efficient.
+
+In the report, we investigate the polls in the city of Toronto. The data contains information from 2015 to 2021. First, we conduct a table of the potential voters, calculating the sum, maximum, minimum, mean, median, and standard deviation. Second, we create another table that summarizes the number of ballots returned, and we can compare the results to the first table. We find the number of potential voters less than ballots returned. Third, we draw a bar plot to find how the application types relate to the response rate. The outcome reflects that participants most care about the front yard parking. Fourth, we draw another bar plot to tell the relationship between application types and the final poll results. The bar plot supports most of the polls passed. Lastly, we conduct a scatter plot to demonstrate the year and the number of ballots returned, grouped by poll results. The plot shows, on average, the number of ballots is below 100 among the years, also most of the results are favorable. The data analyzing process for this report is in **R** [@citer]. We primarily use the **tidyverse** [@tidy] and **dplyr** [@citedplyr]. The graphs in the report are created with the packages of **ggplot2** [@citeggplot], the tables are made with the **knitr** [@citeknitr].
+
+# 2 Data
+
+## 2.1 Data Source
+
+The data set is published by The City Clerk’s Office, which aims to build public trust in the government [@cityclerk]. The Office provides various types of support and services. Including managing the municipal election, making the information to the public with privacy protection, organizing the decision-making process for the Council, and so forth [@cityclerk]. The Office mail the ballots to the residents and owners and provide information about the poll [@information]. People can cast to vote by submitting their ballots [@information]. The data set contains information about the poll relevant to numerous topics regarding property owners, residents, businesses in the neighborhoods. It is collected from April 1, 2015, updated after the closed date and certification of the polls. Recently, the data source is available on the City of Toronto Open Portal[@data] with the **opendatatoronto** package [@citeopendata].  
+
+```{r setup, include=FALSE}
+#set up library
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(opendatatoronto)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+```
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+# get package of data set
+package <- show_package("7bce9bf4-be5c-4261-af01-abfbc3510309")
+resources <- list_package_resources("7bce9bf4-be5c-4261-af01-abfbc3510309")
+datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
+df<- filter(datastore_resources, row_number()==1) %>% get_resource()
+```
+
+## 2.2 Data Collection
+
+The Polls Conducted by the City data set includes polls data from 2015 to 2021 [@information]. The population is all residents, tenants, owners in Toronto [@information]. The participants in the sample are required to be over 18 years old [@information]. The applications involved appeal-front yard parking, commercial boulevard parking, boulevard cafe, and front yard parking. The data set gives various details to describe the polls, such as the location, the number of ballots returned, the number of ballots received as “In favour” or “opposed”, etc. The data is updated daily. However, the data set does not explain the difference between the appeal - front yard parking and front yard parking. Readers may be confused about these two types of application polls. In addition, non-response bias may exist in the designed polls. Because some respondents are neither in favour nor against, they decided not to submit the ballots. In this case, the response rate may fail, leading to insignificant and unreliable results. The results cannot represent the opinions of all the people nor reflect the situations. Thus, we should consider the bias in future studies.
+
+## 2.3 Data Characteristic and Exploratory Data Analysis
+
+Overall, the data set has 25 variables and 1054 observations. There are 15 categorical and 10 numerical variables. This report mainly focuses on analyzing several variables including **APPLICATION_FOR** (application type), **OPEN_DATE** (the open date of the polls), **BALLOTS_CAST** (the number of ballots returned), **RESPONSE_RATE_MET** (the number of ballots returned that has met the response rate), **POLL_RESULT** (final polls results), and **POTENTIAL_VOTERS** (the number of voters living in the poll boundary range). Specifically, 25% of the ballots need to be returned in order to meet the response rate, and 50% plus 1 of the ballots have to be marked as in favor to pass the poll [@information]. A cleaning data set process is maintained. All the missing observations are removed by  **na.omit()** function and 710 observations are remaining. We convert the **OPEN_DATE** variable from categorical to date with **as.Date()** function since it is easier to plot the variable in the following. We create a new variable named **OPEN_YEAR** from **OPEN_DATE** with **as.numeric()** function. **OPEN_YEAR** indicates the year the poll opened to the public. The exploratory Data Analysis (EDA) process is shown below.  
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+# clean data set
+df <- na.omit(df) 
+df$OPEN_DATE <- as.Date(df$OPEN_DATE) #convert the variable from categorical to date
+df$YEAR <- as.numeric(format(df$OPEN_DATE,'%Y'))
+```
+
+### 2.3.1 Tables
+
+Table 1 summarizes the number of potential voters who live in the poll boundary range. The table is grouped by application types of the polls and year. We are interested in analyzing the potential voters since we intend to find out how many people can be influenced directly by the results of the polls. We can compare the outcome to the number of people who voted.
+```{r, a1,  fig.cap = 'Summarize The Potential Voters', fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE, echo = FALSE}
+#create the table that summarize the potential voters
+tab1 <- df %>% 
+  group_by(APPLICATION_FOR, YEAR) %>%
+  summarise(sum = sum(POTENTIAL_VOTERS),
+            min = min(POTENTIAL_VOTERS),
+            max = max(POTENTIAL_VOTERS),
+            median = median(POTENTIAL_VOTERS),
+            mean = mean(POTENTIAL_VOTERS),
+            sd = sd(POTENTIAL_VOTERS))
+knitr::kable(tab1, caption = "Summary Table for The Number of Potential Voters")
+```
+
+We notice that the sum of the potential participants for the appeal-front yard parking, boulevard cafe, and front yard parking are much greater than commercial boulevard parking. Moreover, the minimum and maximum number of potential respondents among these applications are not too different, except the maximum number of potential voters for boulevard cafe in 2019 is extremely high, meaning the many voters can be affected by the result of this poll. And the mean and standard deviation are also high for this row. Lastly, one missing value appears in the standard deviation for the appeal - front yard parking in 2020, because there is only one poll for this application in the year. 
+
+\newpage
+
+Table 2 summarizes the number of ballots returned, including the sum, minimum, maximum, median, mean, and standard deviation, by the application types and occurred year.  
+
+```{r, a2,  fig.cap = 'summarize The Ballots Returned', fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE, echo = FALSE}
+tab2 <- df %>% 
+  group_by( APPLICATION_FOR, YEAR) %>%
+  summarise(sum = sum(BALLOTS_CAST),
+            min = min(BALLOTS_CAST),
+            max = max(BALLOTS_CAST),
+            median = median(BALLOTS_CAST),
+            mean = mean(BALLOTS_CAST),
+            sd = sd(BALLOTS_CAST))
+knitr::kable(tab2, caption = "Summary Table for The Number of Ballots Returned ")
+```
+
+By observing the sum columns, we notice that generally, the total number of ballots returned for appeal-front yard parking and front yard parking are greater than boulevard cafe and commercial boulevard parking. The polls of (appeal -) front yard parking have more than 1,000 ballots returned, except appeal - front yard parking in 2020 only have 25 returned. The results illustrate that the front yard parking issue exists, and participants care more about this problem than other types of applications. We can also conclude that the actual participants are less than the potential voters. The minimum and maximum columns demonstrate the boulevard cafe poll received the least ballots returned in both 2015 and 2016 (0 ballots returned), the most ballots returned in 2019. On average, the number of ballots returned for each application is between 20-40, except for the commercial boulevard parking. Its average is between 10-20. Besides, the standard deviation of appeal - front yard parking in 2020 is missing, because there is only one observation. Meaning in 2020 had one poll for the front yard parking. We cannot calculate the standard deviation when the mean is the one observation and the variance is zero.
+
+\newpage
+
+### 2.3.2 Figures
+
+Figure 1 draws the relationships between application types and the response rate met (yes/no). 
+
+```{r, a3, fig.cap = 'Comparing the application types by response rate met', fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE, echo = FALSE}
+# perform the EDA 
+df %>%
+  count(APPLICATION_FOR, RESPONSE_RATE_MET)%>%
+  ggplot(aes(x=APPLICATION_FOR, y = n, fill = RESPONSE_RATE_MET)) + 
+  geom_bar(stat = "identity") + 
+  geom_text(aes(label = n), position = position_stack(vjust = 0.5), size = 4)+
+  theme_minimal()+ 
+  labs(x = 'Application Type', y = 'Number of Application', fill = 'Response Rate Met', title = ' The Relationship Between Application Type and Response Rate Met') +
+  scale_fill_brewer(palette="Set3")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Overall, we can see response rate met in all the applications is higher than the rate did not meet. Specifically, the response rate met for the front yard parking application is the highest (375 polls met and only 8 polls did not meet the response rate), the response rate met for the commercial boulevard parking is the lowest (9 met and 6 did not meet). Once meet the response rate, the poll is considered valid.
+
+\newpage
+Figure 2 shows the relationship between the final results of the polls (in favor, opposed, response rate not met) and application types.
+
+```{r, a4, fig.cap = 'Comparing application types by the final results', fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE, echo = FALSE}
+#add the label of count
+df %>%
+  count(APPLICATION_FOR, POLL_RESULT)%>%
+  ggplot(aes(x=APPLICATION_FOR, y=n, fill = POLL_RESULT)) + 
+  geom_bar(stat = "identity") + 
+  geom_text(aes(label = n), position = position_stack(vjust = 0.5), size = 3)+
+  theme_minimal()+ 
+  labs(x = 'Application Type', y = 'Number of Application', fill = 'Final Result of Poll', title = 'The Relationship between Application Type and Final Result of Poll') + scale_fill_brewer(palette = "Blues")
+
+
+```
+
+Note that generally, we have more in favour results than opposed results among the applications, except the commercial boulevard parking (3 in favour, and 6 against). Front yard parking polls have the most in favour results. And appeal - front yard parking pools have the most opposed results.
+
+\newpage
+
+Figure 3 We conduct a scatter plot to indicate the relationship between the year and number of ballots returned, by poll results.
+
+```{r, a5,  fig.cap = 'The relationship between the year and number of ballots returned, by poll results', fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE, echo = FALSE}
+df %>%
+  ggplot(mapping = aes(x= YEAR, y = BALLOTS_CAST, color = POLL_RESULT)) + geom_point() + theme_minimal()+ labs(x = "Year", y = "Number of ballots returned", color = "Poll Result", title  = "The Relationship between Year and the Number of ballots returned, by Poll Result") +  scale_color_brewer(palette = "Set2")
+```
+
+We can see an outlier in 2019, which the number of ballots returned is high but it seems did not meet the response rate. This case may be discussed in further study. Most of the polls are approved instead of against. We can also see that on average, the number of ballots returned is below 100 among these years.
+
+
+\newpage
+# 3 Reference
+
+

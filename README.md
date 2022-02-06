@@ -1,0 +1,1 @@
+The project analyzes the dataset which reports the public polls conducted by the City between 2015-2022. We summarize the number of potential voters and the ballots returned. We also create the plots to find the relationship between application types and the response rate met/final polls results.
