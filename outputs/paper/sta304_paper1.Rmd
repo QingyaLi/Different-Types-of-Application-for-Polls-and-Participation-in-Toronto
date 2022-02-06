@@ -7,8 +7,8 @@ abstract: " The dataset reports the public polls conducted by the City between 2
 bibliography: ref.bib
 
 ---
-The main paragraphs are shown below: ^[The files are available at:https://github.com/QingyaLi/sta304-paper1]
 
+More information are available ^[https://github.com/QingyaLi/sta304-paper1]
 # 1 Introduction
 
 Voting is necessary for daily life. The voting results can significantly reflect what people like and dislike, both personal and social [@motivation]. As citizens, we have the political right and responsibility to vote [@motivation]. The City Clerk’s Office responded for the voting in Toronto, including the polls for appeal-front yard parking, front yard parking, boulevard cafe, and boulevard parking [@cityclerk]. Therefore, if people need to require the front yard parking, boulevard parking, and any other type of permissions, they shall submit their applications. The City Clerk's Office would mail the ballots to the residents, tenants, and owners in the polling area [@information]. The results will depend on the number of ballots returned and the number of submitted ballots marked as in favour [@information].
