@@ -7,7 +7,7 @@ abstract: " The dataset reports the public polls conducted by the City between 2
 bibliography: ref.bib
 
 ---
-The main paragraphs are shown below ^[The files are available at:https://github.com/QingyaLi/sta304-paper1]
+The main paragraphs are shown below: ^[The files are available at:https://github.com/QingyaLi/sta304-paper1]
 
 # 1 Introduction
 
